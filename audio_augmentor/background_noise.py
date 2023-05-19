@@ -7,6 +7,13 @@ import os
 
 class BackgroundNoiseAugmentor(BaseAugmentor):
     def __init__(self, input_path, config):
+        """
+        Background noise augmentation
+        Config:
+        noise_path: str, path to the folder containing noise files
+        min_SNR_dB: int, min SNR in dB
+        max_SNR_dB: int, max SNR in dB
+        """
         super().__init__(input_path, config)
         self.noise_path = config["noise_path"]
         self.noise_list = self.select_noise(self.noise_path)
