@@ -3,7 +3,6 @@ from .utils import recursive_list_files
 from pydub import AudioSegment
 import random
 import numpy as np
-import os
 
 class BackgroundNoiseAugmentor(BaseAugmentor):
     def __init__(self, input_path, config):
@@ -54,9 +53,6 @@ class BackgroundNoiseAugmentor(BaseAugmentor):
         scaled_audio = self.audio_data.apply_gain(scaling_factor)
         self.augmented_audio = scaled_audio.overlay(noise_file)
         
-    
-    def save(self):
-        self.augmented_audio.export(os.path.join(self.output_path,self.file_name +"."+ self.out_format), format=self.out_format)
         
     
     

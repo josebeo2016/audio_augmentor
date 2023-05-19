@@ -1,6 +1,5 @@
 from .base import BaseAugmentor
 import random
-import os
 import librosa
 import soundfile as sf
 import numpy as np
@@ -30,5 +29,3 @@ class PitchAugmentor(BaseAugmentor):
                     channels=1
                     )
     
-    def save(self):
-        self.augmented_audio.export(os.path.join(self.output_path,self.file_name +"."+ self.out_format), format=self.out_format)

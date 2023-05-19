@@ -1,4 +1,5 @@
 import librosa
+import os
 
 class BaseAugmentor():
     def __init__(self, input_path, config):
@@ -23,7 +24,7 @@ class BaseAugmentor():
         raise NotImplementedError
     
     def save(self):
-        raise NotImplementedError
+        self.augmented_audio.export(os.path.join(self.output_path,self.file_name +"."+ self.out_format), format=self.out_format)
     
     def run(self):
         self.load()
