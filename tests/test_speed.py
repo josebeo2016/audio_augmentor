@@ -8,8 +8,8 @@ def test_run():
         "aug_type": "pitch",
         "output_path": os.path.join(BASE_DIR,"../test/augmented"),
         "out_format": "flac",
-        "speed_factor": 1.5,
-
+        "min_speed_factor": 1.5,
+        "max_speed_factor": 1.5
     }
     sa = SpeedAugmentor(SAMPLE_WAV, CONFIG)
     sa.run()
