@@ -1,5 +1,6 @@
 from .background_noise import BackgroundNoiseAugmentor
 from .pitch import PitchAugmentor
+from .reverb import ReverbAugmentor
 
 from . import utils
 

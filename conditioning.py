@@ -7,7 +7,6 @@ from functools import partial
 import logging
 import librosa
 import soundfile as sf
-from RawBoost import ISD_additive_noise,LnL_convolutive_noise,SSI_additive_noise,normWav
 from random import randrange
 import torch
 from torch_audiomentations import Compose, AddBackgroundNoise, PolarityInversion
@@ -87,7 +86,7 @@ def background_noise(args, filename):
         "out_format": "flac",
         "noise_path": args.noise_path,
         "min_SNR_dB": -10,
-        "max_SNR_dB": 10
+        "max_SNR_dB": -5
     }
     bga = BackgroundNoiseAugmentor(in_file, config)
     bga.run()
@@ -102,7 +101,7 @@ def main():
     if not os.path.exists(args.output_path):
         os.mkdir(args.output_path)
     
-    func = partial(args.aug_type, args)
+    func = partial(globals()[args.aug_type], args)
     with Pool(processes=args.thread) as p:
         with tqdm(total=num_files) as pbar:
             for _ in p.imap_unordered(func, filenames):
