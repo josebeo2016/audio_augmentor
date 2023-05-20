@@ -12,7 +12,7 @@ setup(
     description=__description__,
     author=__author__,
     license=__license__,
-    install_requires=['pydub', 'librosa', 'numpy'],
+    install_requires=['pydub', 'librosa', 'numpy', 'scipy', 'soundfile'],
     setup_requires=['pytest-runner'],
     tests_require=['pytest'],
     test_suite='tests',
