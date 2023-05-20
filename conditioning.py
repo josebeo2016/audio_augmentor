@@ -13,7 +13,7 @@ from torch_audiomentations import Compose, AddBackgroundNoise, PolarityInversion
 from pydub import AudioSegment
 import random
 
-from audio_augmentor import BackgroundNoiseAugmentor
+from audio_augmentor import BackgroundNoiseAugmentor, PitchAugmentor, ReverbAugmentor
 from audio_augmentor import SUPPORTED_AUGMENTORS
 BASE_DIR = os.path.dirname(os.path.realpath(__file__))
 
@@ -59,23 +59,13 @@ def parse_argument():
     # env_noise
     parser.add_argument('--noise_path', type=str, default="./musan/",required=False, help='Noise file path')
     
+    # reverb
+    parser.add_argument('--rir_path', type=str, default="./RIRS_NOISES/simulated_rirs",required=False, help='Reverb IR file path')
+    
     # load argument
     args = parser.parse_args()
         
     return args
-
-def recursive_list_files(path):
-    """Recursively lists all files in a directory and its subdirectories"""
-    files = []
-    for dirpath, dirnames, filenames in os.walk(path):
-        for filename in filenames:
-            files.append(os.path.join(dirpath, filename))
-    return files
-
-def select_noise(noise_path):
-    noise_list = recursive_list_files(noise_path)
-    noise_file = random.choice(noise_list)
-    return noise_file
     
 def background_noise(args, filename):
     # load audio:
@@ -91,6 +81,31 @@ def background_noise(args, filename):
     bga = BackgroundNoiseAugmentor(in_file, config)
     bga.run()
 
+def pitch(args, filename):
+    # load audio:
+    in_file = os.path.join(args.input_path, filename)
+    config = {
+        "aug_type": "pitch",
+        "output_path": args.output_path,
+        "out_format": "flac",
+        "min_pitch_shift": -4,
+        "max_pitch_shift": 4
+    }
+    pa = PitchAugmentor(in_file, config)
+    pa.run()
+    
+def reverb(args, filename):
+    # load audio:
+    in_file = os.path.join(args.input_path, filename)
+    config = {
+        "aug_type": "reverb",
+        "output_path": args.output_path,
+        "out_format": "flac",
+        "rir_path": args.rir_path,
+    }
+    ra = ReverbAugmentor(in_file, config)
+    ra.run()
+    
 
 def main():
     args = parse_argument()
@@ -100,6 +115,8 @@ def main():
     num_files = len(filenames)
     if not os.path.exists(args.output_path):
         os.mkdir(args.output_path)
+    
+    assert(args.aug_type in SUPPORTED_AUGMENTORS)
     
     func = partial(globals()[args.aug_type], args)
     with Pool(processes=args.thread) as p:

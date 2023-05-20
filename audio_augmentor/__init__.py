@@ -1,6 +1,7 @@
 from .background_noise import BackgroundNoiseAugmentor
 from .pitch import PitchAugmentor
 from .reverb import ReverbAugmentor
+from .speed import SpeedAugmentor
 
 from . import utils
 

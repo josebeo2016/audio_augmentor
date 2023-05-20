@@ -1,5 +1,5 @@
 from .base import BaseAugmentor
-from .utils import recursive_list_files
+from .utils import recursive_list_files, librosa_to_pydub
 from pydub import AudioSegment
 import random
 import numpy as np
@@ -26,14 +26,8 @@ class BackgroundNoiseAugmentor(BaseAugmentor):
     def load(self):
         # load with librosa
         super().load()
-        
         # Convert to pydub audio segment
-        self.data = np.array(self.data * (1<<15), dtype=np.int16)
-        self.audio_data = AudioSegment(self.data.tobytes(), 
-                    frame_rate=self.sr,
-                    sample_width=self.data.dtype.itemsize, 
-                    channels=1
-                    )
+        self.audio_data = librosa_to_pydub(self.data, self.sr)
     
     def transform(self):
         # Load audio files

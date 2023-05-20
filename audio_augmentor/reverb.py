@@ -1,10 +1,9 @@
 from .base import BaseAugmentor
-from .utils import recursive_list_files
+from .utils import recursive_list_files, librosa_to_pydub
 import scipy.signal as ss
 import librosa
 import random
 import numpy as np
-from pydub import AudioSegment
 
 class ReverbAugmentor(BaseAugmentor):
     def __init__(self, input_path, config):
@@ -30,10 +29,6 @@ class ReverbAugmentor(BaseAugmentor):
         reverberate /= (np.max(np.abs(reverberate)))
         
         # transform to pydub audio segment
-        self.augmented_audio = AudioSegment(reverberate.tobytes(), 
-                    frame_rate=self.sr,
-                    sample_width=reverberate.dtype.itemsize, 
-                    channels=1
-                    )
+        self.augmented_audio = librosa_to_pydub(reverberate, sr=self.sr)
     
         

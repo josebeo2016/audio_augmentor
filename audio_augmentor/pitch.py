@@ -1,4 +1,5 @@
 from .base import BaseAugmentor
+from .utils import librosa_to_pydub
 import random
 import librosa
 import soundfile as sf
@@ -24,9 +25,5 @@ class PitchAugmentor(BaseAugmentor):
         # Convert to pydub audio segment
         data = np.array(augmented_audio * (1<<15), dtype=np.int16)
         # transform to pydub audio segment
-        self.augmented_audio = AudioSegment(data.tobytes(), 
-                    frame_rate=self.sr,
-                    sample_width=data.dtype.itemsize, 
-                    channels=1
-                    )
+        self.augmented_audio = librosa_to_pydub(data, sr=self.sr)
     
