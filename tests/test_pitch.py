@@ -3,10 +3,10 @@ import os
 BASE_DIR = os.path.dirname(os.path.realpath(__file__))
 
 def test_run():
-    SAMPLE_WAV = os.path.join(BASE_DIR,"../test/LA_T_1000137.flac")
+    SAMPLE_WAV = os.path.join(BASE_DIR,"data/LA_T_1000137.flac")
     CONFIG = {
         "aug_type": "pitch",
-        "output_path": os.path.join(BASE_DIR,"../test/augmented"),
+        "output_path": os.path.join(BASE_DIR,"data/augmented"),
         "out_format": "flac",
         "min_pitch_shift": 2,
         "max_pitch_shift": 2,

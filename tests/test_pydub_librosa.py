@@ -6,7 +6,7 @@ from pydub import AudioSegment
 BASE_DIR = os.path.dirname(os.path.realpath(__file__))
 
 def test_pydub_to_librosa():
-    SAMPLE_WAV = os.path.join(BASE_DIR,"../test/LA_T_1000137.flac")
+    SAMPLE_WAV = os.path.join(BASE_DIR,"data/LA_T_1000137.flac")
     a = AudioSegment.from_file(SAMPLE_WAV)
     b, _ = librosa.load(SAMPLE_WAV, sr=16000)
     
@@ -17,7 +17,7 @@ def test_pydub_to_librosa():
     assert(c_a==b_p).all()
     
 def test_librosa_to_pydub():
-    SAMPLE_WAV = os.path.join(BASE_DIR,"../test/LA_T_1000137.flac")
+    SAMPLE_WAV = os.path.join(BASE_DIR,"data/LA_T_1000137.flac")
     a = AudioSegment.from_file(SAMPLE_WAV)
     b, _ = librosa.load(SAMPLE_WAV, sr=16000)
     
