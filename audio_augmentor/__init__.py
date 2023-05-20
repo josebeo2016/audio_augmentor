@@ -2,6 +2,7 @@ from .background_noise import BackgroundNoiseAugmentor
 from .pitch import PitchAugmentor
 from .reverb import ReverbAugmentor
 from .speed import SpeedAugmentor
+from .volume import VolumeAugmentor
 
 from . import utils
 
@@ -16,4 +17,4 @@ from .__version__ import (
     __version__,
 )
 
-SUPPORTED_AUGMENTORS = ['background_noise', 'pitch', 'speed', 'volume', 'reverb', 'compression', 'time_stretch', 'pitch_shift']
+SUPPORTED_AUGMENTORS = ['background_noise', 'pitch', 'speed', 'volume', 'reverb']
