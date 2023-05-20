@@ -13,7 +13,7 @@ from torch_audiomentations import Compose, AddBackgroundNoise, PolarityInversion
 from pydub import AudioSegment
 import random
 
-from audio_augmentor import BackgroundNoiseAugmentor, PitchAugmentor, ReverbAugmentor
+from audio_augmentor import BackgroundNoiseAugmentor, PitchAugmentor, ReverbAugmentor, SpeedAugmentor, VolumeAugmentor
 from audio_augmentor import SUPPORTED_AUGMENTORS
 BASE_DIR = os.path.dirname(os.path.realpath(__file__))
 
@@ -55,6 +55,10 @@ def parse_argument():
 
     parser.add_argument('--aug_type', type=str, default="background_noise", required=True, help='Augmentation type.\n'
                         +'Suported: background_noise, pitch, speed, volume, reverb, compression, time_stretch, pitch_shift')
+    
+    parser.add_argument('--out_format', type=str, default="flac", required=False, help='Output format. \n'
+                        +'Suported: flac, ogg, mp3, wav. Default: flac. \n'
+                        +'Encode by pydub + ffmpeg. Please install ffmpeg first. \n')
 
     # env_noise
     parser.add_argument('--noise_path', type=str, default="./musan/",required=False, help='Noise file path')
@@ -73,7 +77,7 @@ def background_noise(args, filename):
     config = {
         "aug_type": "background_noise",
         "output_path": args.output_path,
-        "out_format": "flac",
+        "out_format": args.out_format,
         "noise_path": args.noise_path,
         "min_SNR_dB": -10,
         "max_SNR_dB": -5
@@ -87,7 +91,7 @@ def pitch(args, filename):
     config = {
         "aug_type": "pitch",
         "output_path": args.output_path,
-        "out_format": "flac",
+        "out_format": args.out_format,
         "min_pitch_shift": -4,
         "max_pitch_shift": 4
     }
@@ -100,12 +104,38 @@ def reverb(args, filename):
     config = {
         "aug_type": "reverb",
         "output_path": args.output_path,
-        "out_format": "flac",
+        "out_format": args.out_format,
         "rir_path": args.rir_path,
     }
     ra = ReverbAugmentor(in_file, config)
     ra.run()
+
+def speed(args, filename):
+    # load audio:
+    in_file = os.path.join(args.input_path, filename)
+    config = {
+        "aug_type": "speed",
+        "output_path": args.output_path,
+        "out_format": args.out_format,
+        "min_speed_factor": 0.9,
+        "max_speed_factor": 1.1
+    }
+    sa = SpeedAugmentor(in_file, config)
+    sa.run()
     
+def volume(args, filename):
+    # load audio:
+    in_file = os.path.join(args.input_path, filename)
+    config = {
+        "aug_type": "volume",
+        "output_path": args.output_path,
+        "out_format": args.out_format,
+        "min_volume_dBFS": -10,
+        "max_volume_dBFS": 10
+    }
+    va = VolumeAugmentor(in_file, config)
+    va.run()
+        
 
 def main():
     args = parse_argument()
