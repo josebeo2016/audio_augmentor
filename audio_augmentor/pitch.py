@@ -21,9 +21,7 @@ class PitchAugmentor(BaseAugmentor):
         
     
     def transform(self):
-        augmented_audio = librosa.effects.pitch_shift(self.data, sr=self.sr, n_steps=self.pitch_shift)
-        # Convert to pydub audio segment
-        data = np.array(augmented_audio * (1<<15), dtype=np.int16)
+        data = librosa.effects.pitch_shift(self.data, sr=self.sr, n_steps=self.pitch_shift)
         # transform to pydub audio segment
         self.augmented_audio = librosa_to_pydub(data, sr=self.sr)
     
