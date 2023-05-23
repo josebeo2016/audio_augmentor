@@ -6,7 +6,7 @@ def test_run():
     SAMPLE_WAV = os.path.join(BASE_DIR,"data/LA_T_1000137.flac")
     CONFIG = {
         "aug_type": "reverb",
-        "rir_path": os.path.join(BASE_DIR,"../RIRS_NOISES/simulated_rirs"),
+        "rir_path": os.path.join(BASE_DIR,"data/rir_sample"),
         "output_path": os.path.join(BASE_DIR,"data/augmented"),
         "out_format": "flac",
     }

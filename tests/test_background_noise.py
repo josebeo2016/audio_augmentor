@@ -7,7 +7,7 @@ def test_run():
         "aug_type": "background_noise",
         "output_path": os.path.join(BASE_DIR,"data/augmented"),
         "out_format": "flac",
-        "noise_path": "./musan",
+        "noise_path": os.path.join(BASE_DIR,"data/musan_sample"),
         "min_SNR_dB": 0,
         "max_SNR_dB": 20
     }
