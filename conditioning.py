@@ -16,26 +16,6 @@ from audio_augmentor import BackgroundNoiseAugmentor, PitchAugmentor, ReverbAugm
 from audio_augmentor import SUPPORTED_AUGMENTORS
 BASE_DIR = os.path.dirname(os.path.realpath(__file__))
 
-def add_noise(audio_file_path, noise_file_path, min_SNR_dB=0, max_SNR_dB=20):
-    # Load audio files
-    audio_file = AudioSegment.from_file(audio_file_path)
-    noise_file = AudioSegment.from_file(noise_file_path)
-
-    # Set the desired SNR (signal-to-noise ratio) level in decibels
-    SNR_dB = random.randint(min_SNR_dB, max_SNR_dB)
-
-    # Calculate the power of the signal and noise
-    signal_power = audio_file.dBFS
-    noise_power = noise_file.dBFS
-
-    # Calculate the scaling factor for the noise
-    scaling_factor = 10 ** ((signal_power - SNR_dB - noise_power) / 20)
-
-    # Apply the noise to the audio file
-    augmented_audio = audio_file.overlay(noise_file - random.uniform(0.0, 1.0) * 0.05 * noise_file.dBFS, position=0)
-    
-    return augmented_audio
-
 # Set up logging
 logging.basicConfig(filename='running.log', level=logging.DEBUG, format='%(asctime)s %(levelname)s: %(message)s')
 
@@ -78,8 +58,8 @@ def background_noise(args, filename):
         "output_path": args.output_path,
         "out_format": args.out_format,
         "noise_path": args.noise_path,
-        "min_SNR_dB": -10,
-        "max_SNR_dB": -5
+        "min_SNR_dB": 0,
+        "max_SNR_dB": 5
     }
     bga = BackgroundNoiseAugmentor(in_file, config)
     bga.run()
@@ -91,8 +71,8 @@ def pitch(args, filename):
         "aug_type": "pitch",
         "output_path": args.output_path,
         "out_format": args.out_format,
-        "min_pitch_shift": -4,
-        "max_pitch_shift": 4
+        "min_pitch_shift": -1,
+        "max_pitch_shift": 1
     }
     pa = PitchAugmentor(in_file, config)
     pa.run()
