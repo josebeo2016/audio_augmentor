@@ -58,8 +58,8 @@ def background_noise(args, filename):
         "output_path": args.output_path,
         "out_format": args.out_format,
         "noise_path": args.noise_path,
-        "min_SNR_dB": 0,
-        "max_SNR_dB": 5
+        "min_SNR_dB": 5,
+        "max_SNR_dB": 15
     }
     bga = BackgroundNoiseAugmentor(in_file, config)
     bga.run()
