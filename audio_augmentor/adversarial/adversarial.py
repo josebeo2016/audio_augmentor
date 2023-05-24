@@ -1,6 +1,5 @@
 from audio_augmentor.base import BaseAugmentor
 from audio_augmentor.adversarial.rawnet2 import ArtRawnet2
-from audio_augmentor.adversarial.assist_ssl import Model as AssistSSL
 from audio_augmentor.utils import librosa_to_pydub
 
 from art.attacks.evasion import ProjectedGradientDescent
