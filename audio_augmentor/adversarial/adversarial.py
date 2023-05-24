@@ -1,11 +1,12 @@
 from audio_augmentor.base import BaseAugmentor
 from audio_augmentor.adversarial.rawnet2 import ArtRawnet2
+from audio_augmentor.adversarial.aasist_ssl import ArtAasistSSL
 from audio_augmentor.utils import librosa_to_pydub
 
 from art.attacks.evasion import ProjectedGradientDescent
 
 import numpy as np
-SUPPORTED_CM = ["rawnet2", "assist_ssl"]
+SUPPORTED_CM = ["rawnet2", "aasistssl"]
 SUPPORTED_ADV = ["ProjectedGradientDescent"]
 class AdversarialNoiseAugmentor(BaseAugmentor):
     """Adversarial noise augmentor.
@@ -34,7 +35,9 @@ class AdversarialNoiseAugmentor(BaseAugmentor):
         if self.model_name == "rawnet2":
             self.artmodel = ArtRawnet2(config_path = config["config_path"], device = self.device)
             self.artmodel.load_model(self.model_pretrained)
-        
+        if self.model_name == "aasistssl":
+            self.artmodel = ArtAasistSSL(ssl_model = config["ssl_model"], device = self.device)
+            self.artmodel.load_model(self.model_pretrained)
         # load adversarial class
         self.adv_class = globals()[self.adv_method](self.artmodel.get_art(), **config["adv_config"])
             

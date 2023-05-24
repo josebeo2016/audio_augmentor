@@ -11,8 +11,10 @@ from audio_augmentor.adversarial.artmodel import ArtModelWrapper
 import yaml
 import librosa
 
-___author__ = "Hemlata Tak"
-__email__ = "tak@eurecom.fr"
+############
+## ArtModel
+## josebeo2016
+############
 
 class ArtRawnet2(ArtModelWrapper):
     def __init__(self, config_path, device):
@@ -56,6 +58,9 @@ def pad(x, max_len=64600):
     num_repeats = int(max_len / x_len)+1
     padded_x = np.tile(x, (1, num_repeats))[:, :max_len][0]
     return padded_x	
+
+___author__ = "Hemlata Tak"
+__email__ = "tak@eurecom.fr"
 
 class SincConv(nn.Module):
     @staticmethod
@@ -300,7 +305,6 @@ class RawNet(nn.Module):
         x = self.fc1_gru(x)
         x = self.fc2_gru(x)
         output=self.logsoftmax(x)
-      
         return output
         
         
