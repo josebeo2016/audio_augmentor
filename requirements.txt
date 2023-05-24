@@ -3,3 +3,5 @@ librosa
 numpy
 scipy
 soundfile
+adversarial-robustness-toolbox @ git+https://github.com/josebeo2016/adversarial-robustness-toolbox.git
+fairseq

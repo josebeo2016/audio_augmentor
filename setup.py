@@ -12,8 +12,8 @@ setup(
     description=__description__,
     author=__author__,
     license=__license__,
-    install_requires=['pydub', 'librosa', 'numpy', 'scipy', 'soundfile'],
+    install_requires=['pydub', 'librosa', 'numpy', 'scipy', 'soundfile', 'adversarial-robustness-toolbox'],
     setup_requires=['pytest-runner'],
     tests_require=['pytest'],
-    test_suite='tests',
+    test_suite='./tests/',
 )

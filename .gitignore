@@ -165,3 +165,6 @@ test/
 
 # CMEval
 CMEval/
+
+#model files
+*.pth
