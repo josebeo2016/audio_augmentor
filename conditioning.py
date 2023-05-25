@@ -12,12 +12,12 @@ import torch
 from pydub import AudioSegment
 import random
 
-from audio_augmentor import BackgroundNoiseAugmentor, PitchAugmentor, ReverbAugmentor, SpeedAugmentor, VolumeAugmentor
+from audio_augmentor import BackgroundNoiseAugmentor, PitchAugmentor, ReverbAugmentor, SpeedAugmentor, VolumeAugmentor, AdversarialNoiseAugmentor
 from audio_augmentor import SUPPORTED_AUGMENTORS
 BASE_DIR = os.path.dirname(os.path.realpath(__file__))
 
 # Set up logging
-logging.basicConfig(filename='running.log', level=logging.DEBUG, format='%(asctime)s %(levelname)s: %(message)s')
+# logging.basicConfig(filename='running.log', level=logging.DEBUG, format='%(asctime)s %(levelname)s: %(message)s')
 
 
 def parse_argument():
@@ -114,12 +114,33 @@ def volume(args, filename):
     }
     va = VolumeAugmentor(in_file, config)
     va.run()
-        
+
+def adversarial(args, filename):
+    # load audio:
+    in_file = os.path.join(args.input_path, filename)
+    config = {
+        "aug_type": "adversarial",
+        "output_path": args.output_path,
+        "out_format": args.out_format,
+        "model_name": "rawnet2",
+        "model_pretrained": os.path.join(BASE_DIR,"pretrained/pre_trained_DF_RawNet2.pth"),
+        "config_path": os.path.join(BASE_DIR,"pretrained/Rawnet2_config.yaml"),
+        "device": "cuda:1",
+        "adv_method": "ProjectedGradientDescent",
+        "adv_config": {
+            "eps": 0.003,
+            "eps_step": 0.001,
+            "norm": "inf",
+        }
+    }
+    ana = AdversarialNoiseAugmentor(in_file, config)
+    ana.run()
+
 
 def main():
     args = parse_argument()
     # prepare config:
-    set_start_method("spawn")
+    set_start_method("spawn", force=True)
     filenames = os.listdir(args.input_path)
     num_files = len(filenames)
     if not os.path.exists(args.output_path):
