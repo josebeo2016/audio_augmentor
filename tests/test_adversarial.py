@@ -35,7 +35,7 @@ def test_rawnet2_pgd():
         "model_name": "rawnet2",
         "model_pretrained": os.path.join(BASE_DIR,"../pretrained/pre_trained_DF_RawNet2.pth"),
         "config_path": os.path.join(BASE_DIR,"../pretrained/Rawnet2_config.yaml"),
-        "device": "cuda:1",
+        "device": "cpu",
         "adv_method": "ProjectedGradientDescent",
         "adv_config": {
             "eps": 0.003,
@@ -74,7 +74,7 @@ def test_aasistssl_pgd():
         "model_name": "aasistssl",
         "model_pretrained": os.path.join(BASE_DIR,"../pretrained/LA_model.pth"),
         "ssl_model": os.path.join(BASE_DIR,"../pretrained/xlsr2_300m.pth"),
-        "device": "cuda:1",
+        "device": "cpu",
         "adv_method": "ProjectedGradientDescent",
         "adv_config": {
             "eps": 0.003,
