@@ -1,7 +1,7 @@
-from audio_augmentor.base import BaseAugmentor
-from audio_augmentor.adversarial.rawnet2 import ArtRawnet2
-from audio_augmentor.adversarial.aasist_ssl import ArtAasistSSL
-from audio_augmentor.utils import librosa_to_pydub
+from .base import BaseAugmentor
+from .artmodel.rawnet2 import ArtRawnet2
+from .artmodel.aasist_ssl import ArtAasistSSL
+from .utils import librosa_to_pydub
 
 from art.attacks.evasion import ProjectedGradientDescent
 
@@ -61,10 +61,10 @@ class AdversarialNoiseAugmentor(BaseAugmentor):
             
         else:
             adv_res=np.array([], dtype=np.float32)
-            for i in chunk_size:
+            for i in range(chunk_size):
                 temp = self.data[i*self.artmodel.input_shape[1]:(i+1)*self.artmodel.input_shape[1]]
                 temp = self.artmodel.parse_input(temp)
-                temp = self.adv_class.generate(x=temp.cpu().numpy)[0,:]
+                temp = self.adv_class.generate(x=temp.cpu().numpy())[0,:]
                 adv_res = np.concatenate((adv_res, temp))
             # recover to original length
             self.augmented_audio = librosa_to_pydub(adv_res[:len(self.data + self.artmodel.input_shape[1]) - last_size],sr=self.sr)

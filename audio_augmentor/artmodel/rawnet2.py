@@ -7,7 +7,7 @@ from torch.utils import data
 from collections import OrderedDict
 from torch.nn.parameter import Parameter
 
-from audio_augmentor.adversarial.artmodel import ArtModelWrapper
+from audio_augmentor.artmodel.artmodel import ArtModelWrapper
 import yaml
 import librosa
 

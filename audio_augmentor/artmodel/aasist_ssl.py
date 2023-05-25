@@ -15,7 +15,7 @@ import os
 ## josebeo2016
 ############
 
-from audio_augmentor.adversarial.artmodel import ArtModelWrapper
+from audio_augmentor.artmodel.artmodel import ArtModelWrapper
 
 class ArtAasistSSL(ArtModelWrapper):
     def __init__(self, ssl_model, device):

@@ -7,7 +7,7 @@ from audio_augmentor import (
 )
 setup(
     name='audio_augmentor',
-    packages=find_packages(include=['audio_augmentor']),
+    packages=find_packages(include=['audio_augmentor', 'audio_augmentor.*']),
     version=__version__,
     description=__description__,
     author=__author__,
