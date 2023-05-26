@@ -4,6 +4,6 @@ numpy
 scipy
 soundfile
 adversarial-robustness-toolbox @ git+https://github.com/josebeo2016/adversarial-robustness-toolbox.git
-fairseq
+fairseq @ git+https://github.com/facebookresearch/fairseq.git@v0.10.1
 gdown
 Pillow==9.5.0

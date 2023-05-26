@@ -1,30 +1,15 @@
 from audio_augmentor.adversarial import AdversarialNoiseAugmentor
 import os
 import librosa
-import logging
+from audio_augmentor.utils import down_load_model
 
-logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',filename='test.log')
 BASE_DIR = os.path.dirname(os.path.realpath(__file__))
-def down_load_model(model_name):
-    if model_name == "rawnet2":
-        if os.path.exists(os.path.join(BASE_DIR,"../pretrained/pre_trained_DF_RawNet2.pth")):
-            return
-        os.system("wget https://www.asvspoof.org/asvspoof2021/pre_trained_DF_RawNet2.zip")
-        os.system("unzip pre_trained_DF_RawNet2.zip")
-        os.system("rm pre_trained_DF_RawNet2.zip")
-        os.system("mv pre_trained_DF_RawNet2.pth {}".format(os.path.join(BASE_DIR,"../pretrained/pre_trained_DF_RawNet2.pth")))
-    if model_name == "aasistssl":
-        if os.path.exists(os.path.join(BASE_DIR,"../pretrained/LA_model.pth")):
-            return
-        os.system("gdown 11vFBNKzYUtWqdK358_JEygawFzmmaZjO")
-        os.system("mv LA_model.pth {}".format(os.path.join(BASE_DIR,"../pretrained/LA_model.pth")))
-    
-    if model_name == "xlsr2_300m":
-        if os.path.exists(os.path.join(BASE_DIR,"../pretrained/xlsr2_300m.pth")):
-            return
-        os.system("wget https://dl.fbaipublicfiles.com/fairseq/wav2vec/xlsr2_300m.pt")
-        os.system("mv xlsr2_300m.pt {}".format(os.path.join(BASE_DIR,"../pretrained/xlsr2_300m.pth")))
-    
+SAVE_MODEL = os.path.join(BASE_DIR,"../pretrained")
+
+import logging
+logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+logger = logging.getLogger(__name__)
+
         
 def test_rawnet2_pgd():
     SAMPLE_WAV = os.path.join(BASE_DIR,"data/LA_T_1000137.flac")
@@ -35,7 +20,7 @@ def test_rawnet2_pgd():
         "model_name": "rawnet2",
         "model_pretrained": os.path.join(BASE_DIR,"../pretrained/pre_trained_DF_RawNet2.pth"),
         "config_path": os.path.join(BASE_DIR,"../pretrained/Rawnet2_config.yaml"),
-        "device": "cpu",
+        "device": "cuda:0",
         "adv_method": "ProjectedGradientDescent",
         "adv_config": {
             "eps": 0.003,
@@ -47,7 +32,7 @@ def test_rawnet2_pgd():
     assert True
     ################################## LOCAL TEST ##################################
     # download the pretrained model
-    down_load_model(CONFIG["model_name"])
+    down_load_model(CONFIG["model_name"],SAVE_MODEL)
     
     adva = AdversarialNoiseAugmentor(SAMPLE_WAV, CONFIG)
     adva.load()
@@ -74,7 +59,7 @@ def test_aasistssl_pgd():
         "model_name": "aasistssl",
         "model_pretrained": os.path.join(BASE_DIR,"../pretrained/LA_model.pth"),
         "ssl_model": os.path.join(BASE_DIR,"../pretrained/xlsr2_300m.pth"),
-        "device": "cpu",
+        "device": "cuda:0",
         "adv_method": "ProjectedGradientDescent",
         "adv_config": {
             "eps": 0.003,
@@ -86,8 +71,8 @@ def test_aasistssl_pgd():
     assert True
     
     ################################## LOCAL TEST ##################################
-    down_load_model(CONFIG["model_name"])
-    down_load_model("xlsr2_300m")
+    down_load_model(CONFIG["model_name"], SAVE_MODEL)
+    down_load_model("xlsr2_300m", SAVE_MODEL)
     
     adva = AdversarialNoiseAugmentor(SAMPLE_WAV, CONFIG)
     adva.load()
