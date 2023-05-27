@@ -1,5 +1,6 @@
 # Audio Augmentation Library for Speech Processing
 
+## [Documentation](https://audio-augmentor.readthedocs.io/en/latest/)
 ## Install
 
 ```

@@ -6,14 +6,23 @@ import soundfile as sf
 import numpy as np
 from pydub import AudioSegment
 
+import logging
+logger = logging.getLogger(__name__)
 class PitchAugmentor(BaseAugmentor):
-    def __init__(self, input_path, config):
-        """
+    """
         Pitch augmentation
         Config:
         min_pitch_shift: int, min pitch shift factor
         max_pitch_shift: int, max pitch shift factor
+    """
+    def __init__(self, input_path: str, config: dict):
         """
+        This method initialize the `PitchAugmentor` object.
+        
+        :param input_path: str, path to the input audio file
+        :param config: dict, configuration dictionary
+        """
+        
         super().__init__(input_path, config)
         self.min_pitch_shift = config["min_pitch_shift"]
         self.max_pitch_shift = config["max_pitch_shift"]
@@ -21,6 +30,10 @@ class PitchAugmentor(BaseAugmentor):
         
     
     def transform(self):
+        """
+        Transform the audio by pitch shifting based on `librosa.effects.pitch_shift`
+        The pitch shift factor is randomly selected between min_pitch_shift and max_pitch_shift
+        """
         data = librosa.effects.pitch_shift(self.data, sr=self.sr, n_steps=self.pitch_shift)
         # transform to pydub audio segment
         self.augmented_audio = librosa_to_pydub(data, sr=self.sr)

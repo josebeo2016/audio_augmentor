@@ -18,7 +18,7 @@ import os
 from audio_augmentor.artmodel.artmodel import ArtModelWrapper
 
 class ArtAasistSSL(ArtModelWrapper):
-    def __init__(self, ssl_model, device):
+    def __init__(self, ssl_model: str, device: str):
         super().__init__(device)
         self.model_name = "AasistSSL"
         self.input_shape = [1, 64600]
@@ -26,7 +26,7 @@ class ArtAasistSSL(ArtModelWrapper):
         self.device = device
         self.ssl_model = ssl_model
     
-    def load_model(self, model_path):
+    def load_model(self, model_path: str):
         # load assistssl model
         self.model = Model(ssl_model=self.ssl_model, device=self.device).to(self.device)
         # load weights
@@ -38,7 +38,7 @@ class ArtAasistSSL(ArtModelWrapper):
         X_pad = Tensor(X_pad)
         return X_pad.unsqueeze(0).to(self.device)
     
-    def predict(self, input):
+    def predict(self, input: Tensor):
         """
         return: confidence score of spoof and bonafide class
         """
@@ -47,7 +47,7 @@ class ArtAasistSSL(ArtModelWrapper):
         _, pred = self._predict.max(dim=1)
         return per[0][0].item()*100, per[0][1].item()*100
     
-def pad(x, max_len=64600):
+def pad(x: np.ndarray, max_len: int = 64600):
     x_len = x.shape[0]
     if x_len >= max_len:
         return x[:max_len]

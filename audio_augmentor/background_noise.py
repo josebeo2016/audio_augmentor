@@ -5,10 +5,13 @@ import random
 import numpy as np
 from .utils import librosa_to_pydub
 
+import logging
+logger = logging.getLogger(__name__)
 class BackgroundNoiseAugmentor(BaseAugmentor):
-    def __init__(self, input_path, config):
+    def __init__(self, input_path: str, config: dict):
         """
-        Background noise augmentation
+        Background noise augmentation method.
+        
         Config:
         noise_path: str, path to the folder containing noise files
         min_SNR_dB: int, min SNR in dB
@@ -20,7 +23,7 @@ class BackgroundNoiseAugmentor(BaseAugmentor):
         self.min_SNR_dB = config["min_SNR_dB"]
         self.max_SNR_dB = config["max_SNR_dB"]
         
-    def select_noise(self, noise_path):
+    def select_noise(self, noise_path: str) -> list:
         noise_list = recursive_list_files(noise_path)
         return noise_list
     

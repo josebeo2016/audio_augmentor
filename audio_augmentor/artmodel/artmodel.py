@@ -9,7 +9,7 @@ class ArtModelWrapper():
         self.input_shape = None
         self.device = device
         
-    def load_model(self, model_path):
+    def load_model(self, model_path: str):
         raise NotImplementedError
         
     def get_art(self):
@@ -24,10 +24,10 @@ class ArtModelWrapper():
         )
         return classifier_art
     
-    def parse_input(self, input_data, sr=16000):
+    def parse_input(self, input_data, sr: int = 16000):
         raise NotImplementedError
     
-    def predict(self, input):
+    def predict(self, input: torch.Tensor):
         # make sure model eval mode
         self.model.eval()
         self._predict = self.model(self.parse_input(input))

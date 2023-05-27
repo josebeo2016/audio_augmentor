@@ -2,8 +2,10 @@ from .base import BaseAugmentor
 from .utils import librosa_to_pydub
 import random
 
+import logging
+logger = logging.getLogger(__name__)
 class VolumeAugmentor(BaseAugmentor):
-    def __init__(self, input_path, config):
+    def __init__(self, input_path: str, config: dict):
         """
         Volume augmentor class requires these config:
         min_volume_dBFS: float, min volume dBFS
@@ -21,4 +23,7 @@ class VolumeAugmentor(BaseAugmentor):
         self.audio_data = librosa_to_pydub(self.data, sr=self.sr)
         
     def transform(self):
+        """
+        Volume up or down the audio using pydub `AudioSegment` method
+        """
         self.augmented_audio = self.audio_data + self.volume_dBFS

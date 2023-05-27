@@ -17,7 +17,7 @@ import librosa
 ############
 
 class ArtRawnet2(ArtModelWrapper):
-    def __init__(self, config_path, device):
+    def __init__(self, config_path: str, device: str):
         super().__init__(device)
         self.model_name = "rawnet2"
         self.input_shape = [1, 64600]
@@ -25,7 +25,7 @@ class ArtRawnet2(ArtModelWrapper):
         self.device = device
         self.config_path = config_path
     
-    def load_model(self, model_path):
+    def load_model(self, model_path: str):
         # load rawnet2 config
         with open(self.config_path, "r") as f:
             config = yaml.safe_load(f)
@@ -35,12 +35,12 @@ class ArtRawnet2(ArtModelWrapper):
         self.model.load_state_dict(torch.load(model_path, map_location=self.device))
         self.model.eval()
     
-    def parse_input(self, input_data, sr=16000):
+    def parse_input(self, input_data: np.ndarray, sr: int = 16000):
         X_pad= pad(input_data, 64600)
         X_pad = Tensor(X_pad)
         return X_pad.unsqueeze(0).to(self.device)
     
-    def predict(self, input):
+    def predict(self, input: torch.Tensor):
         """
         return: confidence score of spoof and bonafide class
         """
@@ -50,7 +50,7 @@ class ArtRawnet2(ArtModelWrapper):
         return per[0][0].item()*100, per[0][1].item()*100
     
         
-def pad(x, max_len=64600):
+def pad(x: np.ndarray, max_len: int = 64600):
     x_len = x.shape[0]
     if x_len >= max_len:
         return x[:max_len]

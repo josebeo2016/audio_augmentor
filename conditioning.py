@@ -125,12 +125,13 @@ def adversarial(args, filename):
         "model_name": "rawnet2",
         "model_pretrained": os.path.join(BASE_DIR,"pretrained/pre_trained_DF_RawNet2.pth"),
         "config_path": os.path.join(BASE_DIR,"pretrained/Rawnet2_config.yaml"),
-        "device": "cuda:1",
+        "device": "cuda:0",
         "adv_method": "ProjectedGradientDescent",
         "adv_config": {
             "eps": 0.003,
             "eps_step": 0.001,
             "norm": "inf",
+            "verbose": False
         }
     }
     ana = AdversarialNoiseAugmentor(in_file, config)

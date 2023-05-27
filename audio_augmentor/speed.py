@@ -3,9 +3,10 @@ from .utils import librosa_to_pydub
 from pydub import AudioSegment
 import random
 
-
+import logging
+logger = logging.getLogger(__name__)
 class SpeedAugmentor(BaseAugmentor):
-    def __init__(self, input_path, config):
+    def __init__(self, input_path: str, config: dict):
         """
         Speed augmentor class requires these config:
         min_speed_factor: float, min speed factor
@@ -23,4 +24,7 @@ class SpeedAugmentor(BaseAugmentor):
         self.audio_data = librosa_to_pydub(self.data, sr=self.sr)
         
     def transform(self):
+        """
+        Speed up or down the audio using pydub `AudioSegment.speedup` method
+        """
         self.augmented_audio = self.audio_data.speedup(self.speed_factor)

@@ -7,7 +7,7 @@ import subprocess
 import logging
 logger = logging.getLogger(__name__)
 
-def recursive_list_files(path, file_type=["wav", "mp3", "flac"]):
+def recursive_list_files(path: str, file_type: str =["wav", "mp3", "flac"]) -> list:
     """Recursively lists all files in a directory and its subdirectories"""
     files = []
     for dirpath, dirnames, filenames in os.walk(path):
@@ -17,11 +17,11 @@ def recursive_list_files(path, file_type=["wav", "mp3", "flac"]):
                 files.append(os.path.join(dirpath, filename))
     return files
 
-def pydub_to_librosa(audio_segment):
+def pydub_to_librosa(audio_segment: AudioSegment) -> np.ndarray:
     """Convert pydub audio segment to librosa audio data"""
     return np.array(audio_segment.get_array_of_samples(), dtype=np.int16)
 
-def librosa_to_pydub(audio_data, sr=16000):
+def librosa_to_pydub(audio_data: np.ndarray, sr: int =16000) -> AudioSegment:
     """Convert librosa audio data to pydub audio segment"""
     audio_data = np.array(audio_data * (1<<15), dtype=np.int16)
     return AudioSegment(audio_data.tobytes(), 
@@ -29,14 +29,14 @@ def librosa_to_pydub(audio_data, sr=16000):
                     sample_width=audio_data.dtype.itemsize, 
                     channels=1)
 
-def run_cmd(cmd):
+def run_cmd(cmd: str) -> str:
     try:
         output = subprocess.call(cmd, shell=True, stderr=subprocess.STDOUT, stdout=subprocess.DEVNULL)
     except subprocess.CalledProcessError as e:
         output = e.output
-    return output.decode()
+    # return output.decode()
 
-def down_load_model(model_name, save_path):
+def down_load_model(model_name: str, save_path: str):
     """
     This function help to download the pretrained model of famous ASV spoofing models
     
