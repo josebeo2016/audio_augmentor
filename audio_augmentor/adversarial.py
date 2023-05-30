@@ -1,14 +1,15 @@
 from .base import BaseAugmentor
 from .artmodel.rawnet2 import ArtRawnet2
 from .artmodel.aasist_ssl import ArtAasistSSL
+from .artmodel.lcnn import ArtLCNN
 from .utils import librosa_to_pydub
 
-from art.attacks.evasion import ProjectedGradientDescent, FastGradientMethod
+from art.attacks.evasion import ProjectedGradientDescent, FastGradientMethod, AutoProjectedGradientDescent
 
 import numpy as np
 
-SUPPORTED_CM = ["rawnet2", "aasistssl"]
-SUPPORTED_ADV = ["ProjectedGradientDescent", "FastGradientMethod"]
+SUPPORTED_CM = ["rawnet2", "aasistssl", "lcnn"]
+SUPPORTED_ADV = ["ProjectedGradientDescent", "FastGradientMethod", "AutoProjectedGradientDescent"]
 
 import logging
 
@@ -56,6 +57,12 @@ class AdversarialNoiseAugmentor(BaseAugmentor):
         if self.model_name == "aasistssl":
             self.artmodel = ArtAasistSSL(
                 ssl_model=config["ssl_model"], device=self.device
+            )
+            self.artmodel.load_model(self.model_pretrained)
+        
+        if self.model_name == "lcnn":
+            self.artmodel = ArtLCNN(
+                config_path=config["config_path"], device=self.device
             )
             self.artmodel.load_model(self.model_pretrained)
         # load adversarial class
