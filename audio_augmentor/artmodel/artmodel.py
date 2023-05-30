@@ -1,5 +1,6 @@
 from art.estimators.classification import PyTorchClassifier
 import torch
+import numpy as np
 
 class ArtModelWrapper():
     def __init__(self, device):
@@ -27,7 +28,7 @@ class ArtModelWrapper():
     def parse_input(self, input_data, sr: int = 16000):
         raise NotImplementedError
     
-    def predict(self, input: torch.Tensor):
+    def predict(self, input: np.ndarray):
         # make sure model eval mode
         self.model.eval()
         self._predict = self.model(self.parse_input(input))

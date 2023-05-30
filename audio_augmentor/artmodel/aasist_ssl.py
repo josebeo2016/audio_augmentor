@@ -33,12 +33,12 @@ class ArtAasistSSL(ArtModelWrapper):
         self.model.load_state_dict(torch.load(model_path, map_location=self.device))
         self.model.eval()
         
-    def parse_input(self, input_data, sr=16000):
+    def parse_input(self, input_data: np.ndarray, sr: int=16000):
         X_pad= pad(input_data, 64600)
         X_pad = Tensor(X_pad)
         return X_pad.unsqueeze(0).to(self.device)
     
-    def predict(self, input: Tensor):
+    def predict(self, input: np.ndarray):
         """
         return: confidence score of spoof and bonafide class
         """
