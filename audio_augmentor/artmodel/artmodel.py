@@ -25,6 +25,13 @@ class ArtModelWrapper():
         )
         return classifier_art
     
+    def get_chunk(self, input_data: np.ndarray) -> list:
+        # save original audio data
+        self.data = input_data
+    
+    def chunk_to_audio(self, chunks: list, last_size: int) -> np.ndarray:
+        raise NotImplementedError
+    
     def parse_input(self, input_data, sr: int = 16000):
         raise NotImplementedError
     

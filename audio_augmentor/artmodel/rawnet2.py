@@ -40,6 +40,29 @@ class ArtRawnet2(ArtModelWrapper):
         X_pad = Tensor(X_pad)
         return X_pad.unsqueeze(0).to(self.device)
     
+    def get_chunk(self, input_data: np.ndarray, sr: int=16000):
+        chunk_size = len(input_data) // self.input_shape[1]
+        last_size = len(input_data) % self.input_shape[1]
+        chunks = []
+        if chunk_size == 0:
+            # return the parsed input of the redundant
+            return [self.parse_input(input_data)], last_size
+        for i in range(chunk_size):
+            temp = input_data[i* self.input_shape[1] : (i + 1) * self.input_shape[1]]
+            temp = self.parse_input(temp)
+            chunks.append(temp)
+        if last_size != 0:
+            chunks.append(self.parse_input(input_data[-last_size:]))
+        return chunks, last_size
+    
+    def chunk_to_audio(self, chunks: list, last_size: int) -> np.ndarray:
+        # concatenate chunks
+        res = np.concatenate(chunks, axis=0)
+        if last_size == 0:
+            return res
+        else:
+            return res[:(len(chunks)-1) * self.input_shape[1] + last_size]
+    
     def predict(self, input: np.ndarray):
         """
         return: confidence score of spoof and bonafide class

@@ -14,7 +14,6 @@ import argparse
 ## ArtModel
 ## josebeo2016
 ############
-MIN_N_FRAMES = 600
 
 from audio_augmentor.artmodel.artmodel import ArtModelWrapper
 
@@ -59,13 +58,68 @@ class ArtLCNN(ArtModelWrapper):
             hop_length=stft_conf["hop_length"],
             win_length=stft_conf["win_length"],
             window=stft_conf["window"],
-            pre_emphasis=stft_conf["pre_emphasis"],
+            pre_emphasis=stft_conf["pre_emphasis"]
         )
         lps = np.squeeze(lps)
-        lps = get_unified_feature(lps, eval=True)
+        lps = get_unified_feature(lps, min_n_frame = self.config["arch"]["args"]["min_n_frame"],eval=True)
         lps = np.expand_dims(lps, axis=0)
         X = torch.Tensor(lps)
         return X.unsqueeze(0).to(self.device)
+    
+    def get_chunk(self, input_data: np.ndarray) -> list:
+        super().get_chunk(input_data)
+        # get stft config
+        stft_conf = self.config["stft"]
+        min_n_frame = self.config["arch"]["args"]["min_n_frame"]
+        # extract lps
+        lps = extract_LPS(
+            x=input_data,
+            n_fft=stft_conf["n_fft"],
+            hop_length=stft_conf["hop_length"],
+            win_length=stft_conf["win_length"],
+            window=stft_conf["window"],
+            pre_emphasis=stft_conf["pre_emphasis"],
+        )
+        chunk_size = len(lps) // min_n_frame
+        last_size = len(lps) % min_n_frame
+        if chunk_size == 0:
+            # need to pad the size to min_n_frame
+            temp = get_unified_feature(lps, min_n_frame = min_n_frame,eval=True)
+            temp = np.expand_dims(temp, axis=0)
+            temp = torch.Tensor(temp).unsqueeze(0).to(self.device)
+            
+            return [temp], last_size
+        else:
+            # make a list of chunk which has size of min_n_frame
+            chunks = []
+            for i in range(chunk_size):
+                temp = get_unified_feature(lps[i*min_n_frame:(i+1)*min_n_frame,:], min_n_frame = min_n_frame, eval=True)
+                temp = np.expand_dims(temp, axis=0)
+                temp = torch.Tensor(temp).unsqueeze(0).to(self.device)
+                chunks.append(temp)
+            
+            if last_size != 0:
+                temp = get_unified_feature(lps[-last_size:,:], min_n_frame = min_n_frame, eval=True)
+                temp = np.expand_dims(temp, axis=0)
+                temp = torch.Tensor(temp).unsqueeze(0).to(self.device)
+                chunks.append(temp)
+            
+            return chunks, last_size
+    
+    def chunk_to_audio(self, chunks: list, last_size: int) -> np.ndarray:
+        # concatenate chunks
+        lps = np.concatenate(chunks, axis=1)
+        # recover to original size
+        if last_size != 0:
+            lps = lps[:,:(len(chunks)-1) * self.input_shape[-2] + last_size, :]
+        
+        lps = np.squeeze(lps)
+
+        # revert back to audio
+        stft_conf = self.config["stft"]
+        gt_spec = librosa.stft(self.data, n_fft=stft_conf["n_fft"], hop_length=stft_conf["hop_length"], win_length=stft_conf["win_length"], window=stft_conf["window"])
+        audio = revert_power_db_to_wav(gt_spec=gt_spec, adv_power_db=lps, n_fft=stft_conf["n_fft"], hop_length=stft_conf["hop_length"], win_length=stft_conf["win_length"], window=stft_conf["window"])
+        return audio
 
     def predict(self, input: np.ndarray):
         """
@@ -78,15 +132,15 @@ class ArtLCNN(ArtModelWrapper):
 
 
 # Calculate LPS
-def preemphasis(wav, k=0.97):
+def preemphasis(wav, k=0.97) -> np.ndarray:
     """
     Pre-emphasis filter on waveform
 
     :param wav: audio signal
     :param k: pre-emphasis coefficient
+    :return: pre-emphasized waveform
     """
     return signal.lfilter([1, -k], [1], wav)
-
 
 def extract_LPS(
     x: np.ndarray,
@@ -111,6 +165,7 @@ def extract_LPS(
     :param ref: ref value for log compression
     :param amin: min amplitude for log compression
     :param top_db: max dB for log compression
+    :return: log power spectrogram in np.ndarray
     """
     if pre_emphasis is not None:
         x = preemphasis(x, k=pre_emphasis)
@@ -124,26 +179,60 @@ def extract_LPS(
     return logpowspec
 
 
-def get_unified_feature(mat, eval=False):
+def get_unified_feature(mat: np.ndarray, min_n_frame: int, eval=False):
     """
-    If number of frames > 600, only use the first 600 frames,
-    otherwise, pad by repeating and then use the first 600 frames.
+    If number of frames > min_n_frame, only use the first min_n_frame frames,
+    otherwise, pad by repeating and then use the first min_n_frame frames.
 
     :param mat: has shape [T, D].
+    :param min_n_frame: minimum number of frames.
+    :param eval: if True, only use the first min_n_frame frames. If False, randomly select a segment of min_n_frame frames.
+    :return: unified feature with shape [min_n_frame, D].
     """
     n_frames = mat.shape[0]
+    if n_frames == 0:
+        return mat
 
-    if n_frames > MIN_N_FRAMES:
+    if n_frames > min_n_frame:
         if not eval:
-            ii = np.random.randint(0, n_frames - MIN_N_FRAMES)
-            return mat[ii : (ii + MIN_N_FRAMES), :]
+            ii = np.random.randint(0, n_frames - min_n_frame)
+            return mat[ii : (ii + min_n_frame), :]
         else:
-            return mat[:MIN_N_FRAMES, :]
+            return mat[:min_n_frame, :]
 
-    n_repeat = int(np.ceil(MIN_N_FRAMES / n_frames))
+    n_repeat = int(np.ceil(min_n_frame / n_frames))
     mat = np.tile(mat, (n_repeat, 1))
-    return mat[:MIN_N_FRAMES, :]
+    return mat[:min_n_frame, :]
 
+def power_db_to_mag(power_db: np.ndarray) -> np.ndarray:
+    """
+    Convert power spectrogram to magnitude spectrogram
+    
+    :param power_db: power spectrogram in dB
+    :return: magnitude spectrogram, in np.ndarray
+    """
+    power_spec = librosa.core.db_to_power(S_db=power_db, ref=1.0)
+    mag_spec = np.sqrt(power_spec) 
+    return mag_spec
+
+def revert_power_db_to_wav(gt_spec: np.ndarray, adv_power_db: np.ndarray, n_fft=1724, hop_length=130, win_length=1724, window="blackman") -> np.ndarray:
+    """
+    Revert audio wavform from power spectrogram (which adversarial attack is applied on) and ground truth spectrogram
+    
+    :param gt_spec: Tranformed ground truth spectrogram, librosa.stft(gt_wav)
+    :param adv_power_db: Power spectrogram of adversarial attack
+    :param n_fft: FFT window size
+    :param hop_length: hop length
+    :param win_length: window length
+    :param window: window type
+    :return: audio wavform in np.ndarray
+    """
+    _, phase = librosa.magphase(gt_spec)
+    phase = phase[:, :adv_power_db.shape[0]]
+    mag = power_db_to_mag(adv_power_db).T
+    complex_specgram = mag * phase
+    audio = librosa.istft(complex_specgram, hop_length=hop_length, win_length=win_length, window=window)
+    return audio
 
 ############################
 ## LCNN model from
@@ -212,7 +301,8 @@ class AngleLinear(nn.Module):
         cos_theta = cos_theta * xlen.view(-1, 1)  # ||x|| * cos_theta
         psi_theta = psi_theta * xlen.view(-1, 1)  # ||x|| * psi_theta
         output = (cos_theta, psi_theta)  # during evaluation, using cos_theta
-        return output  # size=(B,Classnum,2)
+        # return output  # size=(B,Classnum,2)
+        return cos_theta
 
     def forward_eval(self, input):
         x = input

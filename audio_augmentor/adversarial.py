@@ -4,12 +4,20 @@ from .artmodel.aasist_ssl import ArtAasistSSL
 from .artmodel.lcnn import ArtLCNN
 from .utils import librosa_to_pydub
 
-from art.attacks.evasion import ProjectedGradientDescent, FastGradientMethod, AutoProjectedGradientDescent
+from art.attacks.evasion import (
+    ProjectedGradientDescent,
+    FastGradientMethod,
+    AutoProjectedGradientDescent,
+)
 
 import numpy as np
 
 SUPPORTED_CM = ["rawnet2", "aasistssl", "lcnn"]
-SUPPORTED_ADV = ["ProjectedGradientDescent", "FastGradientMethod", "AutoProjectedGradientDescent"]
+SUPPORTED_ADV = [
+    "ProjectedGradientDescent",
+    "FastGradientMethod",
+    "AutoProjectedGradientDescent",
+]
 
 import logging
 
@@ -32,6 +40,7 @@ class AdversarialNoiseAugmentor(BaseAugmentor):
     :adv_method: name of the adversarial methods - supported by ART evasion attacks. Currently supported methods: ${SUPPORTED_ADV}
     :adv_config: configuration of the adversarial method
     """
+
     def __init__(self, input_path: str, config: dict, y_true: bool = None):
         """
         This method initializes the `AdversarialNoiseAugmentor` object.
@@ -59,7 +68,7 @@ class AdversarialNoiseAugmentor(BaseAugmentor):
                 ssl_model=config["ssl_model"], device=self.device
             )
             self.artmodel.load_model(self.model_pretrained)
-        
+
         if self.model_name == "lcnn":
             self.artmodel = ArtLCNN(
                 config_path=config["config_path"], device=self.device
@@ -81,39 +90,18 @@ class AdversarialNoiseAugmentor(BaseAugmentor):
         classifier_art = self.artmodel.get_art()
 
         # chunk audio
-        chunk_size = len(self.data) // self.artmodel.input_shape[1]
-        last_size = len(self.data) % self.artmodel.input_shape[1]
-        if chunk_size == 0:
-            # no need to split and concat after process
-            temp = self.data
-            temp = self.artmodel.parse_input(temp)
-            # for black-box attack
+        chunks, last_size = self.artmodel.get_chunk(self.data)
+        
+        # list of np.ndarray, contains adversarial noise
+        adv_res = [] 
+        for chunk in chunks:
             if self.y_true is not None:
-                temp = self.adv_class.generate(x=temp.cpu().numpy(), y=self.y_true)[
-                    0, :
-                ]
-            temp = self.adv_class.generate(x=temp.cpu().numpy())[0, :]
-            # recover to original length
-            self.augmented_audio = librosa_to_pydub(temp[:last_size], sr=self.sr)
+                temp = self.adv_class.generate(x=chunk.cpu().numpy(), y=self.y_true)[0, :]
+            temp = self.adv_class.generate(x=chunk.cpu().numpy())[0, :]
+            adv_res.append(temp)
 
-        else:
-            adv_res = np.array([], dtype=np.float32)
-            for i in range(chunk_size):
-                temp = self.data[
-                    i
-                    * self.artmodel.input_shape[1] : (i + 1)
-                    * self.artmodel.input_shape[1]
-                ]
-                temp = self.artmodel.parse_input(temp)
-                # for black-box attack
-                if self.y_true is not None:
-                    temp = self.adv_class.generate(x=temp.cpu().numpy(), y=self.y_true)[
-                        0, :
-                    ]
-                temp = self.adv_class.generate(x=temp.cpu().numpy())[0, :]
-                adv_res = np.concatenate((adv_res, temp))
-            # recover to original length
-            self.augmented_audio = librosa_to_pydub(
-                adv_res[: len(self.data + self.artmodel.input_shape[1]) - last_size],
-                sr=self.sr,
-            )
+        # recover to original length audio
+        audio = self.artmodel.chunk_to_audio(adv_res, last_size)
+        
+        # convert to pydub
+        self.augmented_audio = librosa_to_pydub(audio, sr=self.sr)
