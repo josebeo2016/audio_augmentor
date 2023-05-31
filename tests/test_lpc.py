@@ -1,15 +1,16 @@
 from audio_augmentor.artmodel import lcnn
 import parse_config
-
+import torch
 import os
 import librosa
 import json
 BASE_DIR = os.path.dirname(os.path.realpath(__file__))
+DEVICE = "cuda:0" if torch.cuda.is_available() else "cpu"
 
 def test_extract_lpc():
     SAMPLE_WAV = os.path.join(BASE_DIR,"data/LA_T_1000137.flac")
 
-    LCNN = lcnn.ArtLCNN(config_path=os.path.join(BASE_DIR,"../pretrained/lcnn_lpsseg_uf_seg600.json"), device="cpu")
+    LCNN = lcnn.ArtLCNN(config_path=os.path.join(BASE_DIR,"../pretrained/lcnn_lpsseg_uf_seg600.json"), device=DEVICE)
     # load audio with librosa
     wav, sr = librosa.load(SAMPLE_WAV, sr=16000)
     lpc = LCNN.parse_input(wav, sr=sr)
