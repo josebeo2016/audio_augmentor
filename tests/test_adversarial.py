@@ -1,4 +1,4 @@
-from audio_augmentor.adversarial import AdversarialNoiseAugmentor
+from audio_augmentor import AdversarialNoiseAugmentor
 import os
 import librosa
 from audio_augmentor.utils import down_load_model
@@ -7,6 +7,8 @@ import parse_config
 
 BASE_DIR = os.path.dirname(os.path.realpath(__file__))
 SAVE_MODEL = os.path.join(BASE_DIR,"../pretrained")
+# SAMPLE_WAV = os.path.join(BASE_DIR,"data/LA_T_1000137.flac") # short audio
+SAMPLE_WAV = os.path.join(BASE_DIR,"data/20230531_161208.wav") # long audio
 
 import logging
 logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
@@ -14,7 +16,7 @@ logger = logging.getLogger(__name__)
 DEVICE = "cuda:0" if torch.cuda.is_available() else "cpu"
         
 def test_rawnet2_pgd():
-    SAMPLE_WAV = os.path.join(BASE_DIR,"data/LA_T_1000137.flac")
+
     CONFIG = {
         "aug_type": "adversarial",
         "output_path": os.path.join(BASE_DIR,"data/augmented"),
@@ -48,12 +50,11 @@ def test_rawnet2_pgd():
     aug_y, _ = librosa.load(os.path.join(CONFIG["output_path"], adva.file_name +"."+ CONFIG["out_format"]), sr=16000)
     
     assert len(ori_y) == len(aug_y)
-    
     # remove output file
     os.remove(os.path.join(CONFIG["output_path"], adva.file_name +"."+ CONFIG["out_format"]))
     
 def test_aasistssl_pgd():
-    SAMPLE_WAV = os.path.join(BASE_DIR,"data/LA_T_1000137.flac")
+
     CONFIG = {
         "aug_type": "adversarial",
         "output_path": os.path.join(BASE_DIR,"data/augmented"),
@@ -88,10 +89,12 @@ def test_aasistssl_pgd():
     ori_y, _ = librosa.load(SAMPLE_WAV, sr=16000)
     aug_y, _ = librosa.load(os.path.join(CONFIG["output_path"], adva.file_name +"."+ CONFIG["out_format"]), sr=16000)
     assert len(ori_y) == len(aug_y)
+    # remove output file
+    os.remove(os.path.join(CONFIG["output_path"], adva.file_name +"."+ CONFIG["out_format"]))
         
 
 def test_lcnn_pgd():
-    SAMPLE_WAV = os.path.join(BASE_DIR,"data/LA_T_1000137.flac")
+
     CONFIG = {
         "aug_type": "adversarial",
         "output_path": os.path.join(BASE_DIR,"data/augmented"),
@@ -120,10 +123,12 @@ def test_lcnn_pgd():
     
     # test if the output file exists
     assert os.path.exists(os.path.join(CONFIG["output_path"], adva.file_name +"."+ CONFIG["out_format"]))
-    
     # check if the length of file is correct
     ori_y, _ = librosa.load(SAMPLE_WAV, sr=16000)
     aug_y, _ = librosa.load(os.path.join(CONFIG["output_path"], adva.file_name +"."+ CONFIG["out_format"]), sr=16000)
-    assert len(ori_y) == len(aug_y)
+    # the length of the file should be approximately the same (not exactly the same) due to the converting from LPS to audio
+    assert len(ori_y)//1000 == len(aug_y)//1000
+    # remove output file
+    os.remove(os.path.join(CONFIG["output_path"], adva.file_name +"."+ CONFIG["out_format"]))
     
     

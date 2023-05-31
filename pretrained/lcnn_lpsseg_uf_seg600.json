@@ -7,7 +7,8 @@
         "args": {
             "c_s": [32, 48, 64, 32, 32, 80],
             "asoftmax": true,
-            "phiflag": true
+            "phiflag": true,
+            "min_n_frame": 600
         }
     },
     "train_data_loader": {
