@@ -118,6 +118,9 @@ def volume(args, filename):
 def adversarial(args, filename):
     # load audio:
     in_file = os.path.join(args.input_path, filename)
+    # More model could be found at AISRC1 ls /data/longnv/_saved/models/LA_lcnn_LPSseg_uf_seg600/
+    # or /datab/PretrainedModel/adversarial_model_longnv 
+    # Note that, the stft config should be add into the original config file before using this code. This make the code solid.
     config = {
         "aug_type": "adversarial",
         "output_path": args.output_path,
