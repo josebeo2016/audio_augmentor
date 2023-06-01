@@ -1,3 +1,6 @@
 [submodule "adversarial-robustness-toolbox"]
 	path = adversarial-robustness-toolbox
 	url = https://github.com/josebeo2016/adversarial-robustness-toolbox.git
+[submodule "BTS-Encoder-ASVspoof"]
+	path = BTS-Encoder-ASVspoof
+	url = https://github.com/josebeo2016/BTS-Encoder-ASVspoof.git
