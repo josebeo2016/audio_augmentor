@@ -40,7 +40,7 @@ def down_load_model(model_name: str, save_path: str):
     """
     This function help to download the pretrained model of famous ASV spoofing models
     
-    :param model_name: the name of the model. Support ["rawnet2", "aasistssl", "xlsr2_300m"]
+    :param model_name: the name of the model. Support ["rawnet2", "aasistssl", "xlsr2_300m", "lcnn", "btse"]
     :param save_path: the path to save the pretrained model
     """
     if model_name == "rawnet2":
@@ -64,3 +64,17 @@ def down_load_model(model_name: str, save_path: str):
         logger.info("Downloading pretrained model for Wav2Vec2.0 (XLSR-2.0-300M)")
         run_cmd("wget https://dl.fbaipublicfiles.com/fairseq/wav2vec/xlsr2_300m.pt")
         run_cmd("mv xlsr2_300m.pt {}".format(os.path.join(save_path,"xlsr2_300m.pth")))
+        
+    if model_name == "lcnn":
+        if os.path.exists(os.path.join(save_path,"lcnn_full_230209.pth")):
+            return
+        logger.info("Downloading pretrained model for LCNN")
+        run_cmd("gdown 1T2xWKuaFbtJjXdwUVPL7_hDPoKBE-MC8")
+        run_cmd("mv lcnn_full_230209.pth {}".format(os.path.join(save_path,"lcnn_full_230209.pth")))
+        
+    if model_name == "btse":
+        if os.path.exists(os.path.join(save_path,"tts_vc_trans_64_concat.pth")):
+            return
+        logger.info("Downloading pretrained model for BTSE")
+        run_cmd("gdown 174L262CCMnvp4YQKG2t07Mrf_mDIf0ul")
+        run_cmd("mv tts_vc_trans_64_concat.pth {}".format(os.path.join(save_path,"tts_vc_trans_64_concat.pth")))

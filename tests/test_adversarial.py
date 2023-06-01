@@ -52,6 +52,44 @@ def test_rawnet2_pgd():
     assert len(ori_y) == len(aug_y)
     # remove output file
     os.remove(os.path.join(CONFIG["output_path"], adva.file_name +"."+ CONFIG["out_format"]))
+
+def test_btse_pgd():
+
+    CONFIG = {
+        "aug_type": "adversarial",
+        "output_path": os.path.join(BASE_DIR,"data/augmented"),
+        "out_format": "flac",
+        "model_name": "btse",
+        "model_pretrained": os.path.join(BASE_DIR,"../pretrained/tts_vc_trans_64_concat.pth"),
+        "config_path": os.path.join(BASE_DIR,"../pretrained/model_config_RawNet_Trans_64concat.yaml"),
+        "device": DEVICE,
+        "adv_method": "ProjectedGradientDescent",
+        "adv_config": {
+            "eps": 0.003,
+            "eps_step": 0.001,
+            "norm": "inf",
+        }
+    }
+    ################################## GITHUB TEST ##################################
+    assert True
+    ################################## LOCAL TEST ##################################
+    # download the pretrained model
+    down_load_model(CONFIG["model_name"],SAVE_MODEL)
+    
+    adva = AdversarialNoiseAugmentor(SAMPLE_WAV, CONFIG)
+    adva.load()
+    adva.transform()
+    adva.run()
+    # test if the output file exists
+    assert os.path.exists(os.path.join(CONFIG["output_path"], adva.file_name +"."+ CONFIG["out_format"]))
+    
+    # check if the length of file is correct
+    ori_y, _ = librosa.load(SAMPLE_WAV, sr=16000)
+    aug_y, _ = librosa.load(os.path.join(CONFIG["output_path"], adva.file_name +"."+ CONFIG["out_format"]), sr=16000)
+    
+    assert len(ori_y) == len(aug_y)
+    # remove output file
+    os.remove(os.path.join(CONFIG["output_path"], adva.file_name +"."+ CONFIG["out_format"]))
     
 def test_aasistssl_pgd():
 
@@ -115,6 +153,7 @@ def test_lcnn_pgd():
     
     ################################## LOCAL TEST ##################################
     # download the pretrained model - TODO
+    down_load_model(CONFIG["model_name"], SAVE_MODEL)
     
     adva = AdversarialNoiseAugmentor(SAMPLE_WAV, CONFIG)
     adva.load()

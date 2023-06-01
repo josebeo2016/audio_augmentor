@@ -1,5 +1,6 @@
 from .base import BaseAugmentor
 from .artmodel.rawnet2 import ArtRawnet2
+from .artmodel.btse import ArtBTSE
 from .artmodel.aasist_ssl import ArtAasistSSL
 from .artmodel.lcnn import ArtLCNN
 from .utils import librosa_to_pydub
@@ -12,7 +13,7 @@ from art.attacks.evasion import (
 
 import numpy as np
 
-SUPPORTED_CM = ["rawnet2", "aasistssl", "lcnn"]
+SUPPORTED_CM = ["rawnet2", "btse", "aasistssl", "lcnn"]
 SUPPORTED_ADV = [
     "ProjectedGradientDescent",
     "FastGradientMethod",
@@ -39,7 +40,7 @@ class AdversarialNoiseAugmentor(BaseAugmentor):
     :device: device to run the CM model (cpu or cuda)
     :adv_method: name of the adversarial methods - supported by ART evasion attacks. Currently supported methods: ${SUPPORTED_ADV}
     :adv_config: configuration of the adversarial method
-    """
+    """.format(SUPPORTED_CM=SUPPORTED_CM, SUPPORTED_ADV=SUPPORTED_ADV)
 
     def __init__(self, input_path: str, config: dict, y_true: bool = None):
         """
@@ -63,6 +64,13 @@ class AdversarialNoiseAugmentor(BaseAugmentor):
                 config_path=config["config_path"], device=self.device
             )
             self.artmodel.load_model(self.model_pretrained)
+        
+        if self.model_name == "btse":
+            self.artmodel = ArtBTSE(
+                config_path=config["config_path"], device=self.device
+            )
+            self.artmodel.load_model(self.model_pretrained)
+        
         if self.model_name == "aasistssl":
             self.artmodel = ArtAasistSSL(
                 ssl_model=config["ssl_model"], device=self.device
@@ -93,7 +101,8 @@ class AdversarialNoiseAugmentor(BaseAugmentor):
         chunks, last_size = self.artmodel.get_chunk(self.data)
         
         # list of np.ndarray, contains adversarial noise
-        adv_res = [] 
+        adv_res = []
+
         for chunk in chunks:
             if self.y_true is not None:
                 temp = self.adv_class.generate(x=chunk.cpu().numpy(), y=self.y_true)[0, :]
