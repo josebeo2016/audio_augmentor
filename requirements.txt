@@ -7,3 +7,8 @@ adversarial-robustness-toolbox @ git+https://github.com/josebeo2016/adversarial-
 fairseq @ git+https://github.com/facebookresearch/fairseq.git@a54021305d6b3c4c5959ac9395135f63202db8f1
 gdown
 Pillow==9.5.0
+pandas
+h5py==3.7.0
+spafe==0.1.2
+matplotlib==3.5.3
+auditok==0.2.0
