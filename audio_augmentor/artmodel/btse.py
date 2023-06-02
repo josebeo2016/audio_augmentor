@@ -74,14 +74,7 @@ class ArtBTSE(ArtModelWrapper):
         _, pred = self._predict.max(dim=1)
         return per[0][0].item()*100, per[0][1].item()*100
     
-        
-def get_Bio(X_pad, fs):
 
-    bio = wav2bio(X_pad, fs)
-    # bio_length = len(bio)
-    bio_inp = torch.IntTensor(bio)
-    bio_length = torch.IntTensor([len(bio)])
-    return bio_inp, bio_length
 
 def pad(x, max_len=64600):
     x_len = x.shape[0]
@@ -91,11 +84,3 @@ def pad(x, max_len=64600):
     num_repeats = int(max_len / x_len)+1
     padded_x = np.tile(x, (1, num_repeats))[:, :max_len][0]
     return padded_x
-
-def parse_input(file_path):
-    cut = 64600  # take ~4 sec audio (64600 samples)
-    X, fs = librosa.load(file_path, sr=16000)
-    X_pad = pad(X, cut)
-    x_inp = Tensor(X_pad)
-    bio_inp, bio_length = get_Bio(X_pad, fs)
-    return x_inp.unsqueeze(0).to(device), bio_inp.unsqueeze(0).to(device), bio_length.to(device)
