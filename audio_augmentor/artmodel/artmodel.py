@@ -39,3 +39,7 @@ class ArtModelWrapper():
         # make sure model eval mode
         self.model.eval()
         self._predict = self.model(self.parse_input(input))
+        
+    def batch_load(self, input_dir: str, sr: int = 16000):
+        raise NotImplementedError
+        

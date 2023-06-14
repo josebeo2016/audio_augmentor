@@ -42,14 +42,13 @@ class AdversarialNoiseAugmentor(BaseAugmentor):
     :adv_config: configuration of the adversarial method
     """.format(SUPPORTED_CM=SUPPORTED_CM, SUPPORTED_ADV=SUPPORTED_ADV)
 
-    def __init__(self, input_path: str, config: dict, y_true: bool = None):
+    def __init__(self, config: dict, y_true: bool = None):
         """
         This method initializes the `AdversarialNoiseAugmentor` object.
 
-        :param input_path: path to the input audio file
         :param config: configuration of the augmentor
         """
-        super().__init__(input_path, config)
+        super().__init__(config)
         self.model_name = config["model_name"]
         self.model_pretrained = config["model_pretrained"]
         self.device = config["device"]
@@ -89,10 +88,7 @@ class AdversarialNoiseAugmentor(BaseAugmentor):
         self.adv_class = globals()[self.adv_method](
             self.artmodel.get_art(), **config["adv_config"]
         )
-
-    def load(self):
-        super().load()
-
+        
     def transform(self):
         # get classifier_art
         classifier_art = self.artmodel.get_art()
@@ -114,3 +110,8 @@ class AdversarialNoiseAugmentor(BaseAugmentor):
         
         # convert to pydub
         self.augmented_audio = librosa_to_pydub(audio, sr=self.sr)
+    
+    def transform_load(self, input_dir, batch_size):
+        # get classifier_art
+        # [TODO] load model here
+        raise NotImplementedError

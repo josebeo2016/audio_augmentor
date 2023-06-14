@@ -15,26 +15,28 @@ class BaseAugmentor:
     out_format: str, output format
     """
 
-    def __init__(self, input_path: str, config: dict):
+    def __init__(self, config: dict):
         """
         This method initialize the `BaseAugmentor` object.
         """
         self.config = config
         self.aug_type = config["aug_type"]
-        self.input_path = input_path
+        
         self.output_path = config["output_path"]
-        self.file_name = self.input_path.split("/")[-1].split(".")[0]
         self.out_format = config["out_format"]
         self.augmented_audio = None
         self.data = None
         self.sr = 16000
 
-    def load(self):
+    def load(self, input_path: str):
         """
         Load audio file and normalize the data
         Librosa done this part
         self.data: audio data in numpy array (librosa load)
+        :param input_path: path to the input audio file      
         """
+        self.input_path = input_path
+        self.file_name = self.input_path.split("/")[-1].split(".")[0]
         # load with librosa and auto resample to 16kHz
         self.data, self.sr = librosa.load(self.input_path, sr=self.sr)
 
@@ -59,10 +61,3 @@ class BaseAugmentor:
             format=self.out_format,
         )
 
-    def run(self):
-        """
-        Run the augmentation pipeline. load()->transform()->save()
-        """
-        self.load()
-        self.transform()
-        self.save()

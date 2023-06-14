@@ -11,8 +11,10 @@ def test_run():
         "min_pitch_shift": 2,
         "max_pitch_shift": 2,
     }
-    pa = PitchAugmentor(SAMPLE_WAV, CONFIG)
-    pa.run()
+    pa = PitchAugmentor(CONFIG)
+    pa.load(SAMPLE_WAV)
+    pa.transform()
+    pa.save()
     assert os.path.exists(os.path.join(CONFIG["output_path"], pa.file_name +"."+ CONFIG["out_format"]))
     os.remove(os.path.join(CONFIG["output_path"], pa.file_name +"."+ CONFIG["out_format"]))
     

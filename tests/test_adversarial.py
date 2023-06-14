@@ -38,10 +38,10 @@ def test_rawnet2_pgd():
     # download the pretrained model
     down_load_model(CONFIG["model_name"],SAVE_MODEL)
     
-    adva = AdversarialNoiseAugmentor(SAMPLE_WAV, CONFIG)
-    adva.load()
+    adva = AdversarialNoiseAugmentor(CONFIG)
+    adva.load(SAMPLE_WAV)
     adva.transform()
-    adva.run()
+    adva.save()
     # test if the output file exists
     assert os.path.exists(os.path.join(CONFIG["output_path"], adva.file_name +"."+ CONFIG["out_format"]))
     
@@ -76,10 +76,10 @@ def test_btse_pgd():
     # download the pretrained model
     down_load_model(CONFIG["model_name"],SAVE_MODEL)
     
-    adva = AdversarialNoiseAugmentor(SAMPLE_WAV, CONFIG)
-    adva.load()
+    adva = AdversarialNoiseAugmentor(CONFIG)
+    adva.load(SAMPLE_WAV)
     adva.transform()
-    adva.run()
+    adva.save()
     # test if the output file exists
     assert os.path.exists(os.path.join(CONFIG["output_path"], adva.file_name +"."+ CONFIG["out_format"]))
     
@@ -115,10 +115,10 @@ def test_aasistssl_pgd():
     down_load_model(CONFIG["model_name"], SAVE_MODEL)
     down_load_model("xlsr2_300m", SAVE_MODEL)
     
-    adva = AdversarialNoiseAugmentor(SAMPLE_WAV, CONFIG)
-    adva.load()
+    adva = AdversarialNoiseAugmentor(CONFIG)
+    adva.load(SAMPLE_WAV)
     adva.transform()
-    adva.run()
+    adva.save()
     
     # test if the output file exists
     assert os.path.exists(os.path.join(CONFIG["output_path"], adva.file_name +"."+ CONFIG["out_format"]))
@@ -155,10 +155,10 @@ def test_lcnn_pgd():
     # download the pretrained model - TODO
     down_load_model(CONFIG["model_name"], SAVE_MODEL)
     
-    adva = AdversarialNoiseAugmentor(SAMPLE_WAV, CONFIG)
-    adva.load()
+    adva = AdversarialNoiseAugmentor(CONFIG)
+    adva.load(SAMPLE_WAV)
     adva.transform()
-    adva.run()
+    adva.save()
     
     # test if the output file exists
     assert os.path.exists(os.path.join(CONFIG["output_path"], adva.file_name +"."+ CONFIG["out_format"]))

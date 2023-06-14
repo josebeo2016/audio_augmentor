@@ -11,8 +11,10 @@ def test_run():
         "min_speed_factor": 1.5,
         "max_speed_factor": 1.5
     }
-    sa = SpeedAugmentor(SAMPLE_WAV, CONFIG)
-    sa.run()
+    sa = SpeedAugmentor(CONFIG)
+    sa.load(SAMPLE_WAV)
+    sa.transform()
+    sa.save()
     assert os.path.exists(os.path.join(CONFIG["output_path"], sa.file_name +"."+ CONFIG["out_format"]))
     os.remove(os.path.join(CONFIG["output_path"], sa.file_name +"."+ CONFIG["out_format"]))
     

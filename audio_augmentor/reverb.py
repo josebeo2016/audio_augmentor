@@ -8,14 +8,14 @@ import numpy as np
 import logging
 logger = logging.getLogger(__name__)
 class ReverbAugmentor(BaseAugmentor):
-    def __init__(self, input_path: str, config: dict):
+    def __init__(self, config: dict):
         """
         Reverb augmentation
         Config:
         rir_path: str, path to the folder containing RIR files 
         (RIR dataset example https://www.openslr.org/28/)
         """
-        super().__init__(input_path, config)
+        super().__init__(config)
         self.rir_path = config["rir_path"]
         self.rir_file = self.select_rir(self.rir_path)
         

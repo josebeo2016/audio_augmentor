@@ -11,7 +11,9 @@ def test_run():
         "min_volume_dBFS": -10,
         "max_volume_dBFS": 10
     }
-    va = VolumeAugmentor(SAMPLE_WAV, CONFIG)
-    va.run()
+    va = VolumeAugmentor(CONFIG)
+    va.load(SAMPLE_WAV)
+    va.transform()
+    va.save()
     assert os.path.exists(os.path.join(CONFIG["output_path"], va.file_name +"."+ CONFIG["out_format"]))
     os.remove(os.path.join(CONFIG["output_path"], va.file_name +"."+ CONFIG["out_format"]))

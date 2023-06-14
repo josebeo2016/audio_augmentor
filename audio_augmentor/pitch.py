@@ -15,15 +15,14 @@ class PitchAugmentor(BaseAugmentor):
         min_pitch_shift: int, min pitch shift factor
         max_pitch_shift: int, max pitch shift factor
     """
-    def __init__(self, input_path: str, config: dict):
+    def __init__(self, config: dict):
         """
         This method initialize the `PitchAugmentor` object.
         
-        :param input_path: str, path to the input audio file
         :param config: dict, configuration dictionary
         """
         
-        super().__init__(input_path, config)
+        super().__init__(config)
         self.min_pitch_shift = config["min_pitch_shift"]
         self.max_pitch_shift = config["max_pitch_shift"]
         self.pitch_shift = random.randint(self.min_pitch_shift, self.max_pitch_shift)

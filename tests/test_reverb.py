@@ -10,8 +10,10 @@ def test_run():
         "output_path": os.path.join(BASE_DIR,"data/augmented"),
         "out_format": "flac",
     }
-    pa = ReverbAugmentor(SAMPLE_WAV, CONFIG)
-    pa.run()
+    pa = ReverbAugmentor(CONFIG)
+    pa.load(SAMPLE_WAV)
+    pa.transform()
+    pa.save()
     assert os.path.exists(os.path.join(CONFIG["output_path"], pa.file_name +"."+ CONFIG["out_format"]))
     os.remove(os.path.join(CONFIG["output_path"], pa.file_name +"."+ CONFIG["out_format"]))
     

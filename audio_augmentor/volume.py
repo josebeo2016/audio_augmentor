@@ -5,20 +5,23 @@ import random
 import logging
 logger = logging.getLogger(__name__)
 class VolumeAugmentor(BaseAugmentor):
-    def __init__(self, input_path: str, config: dict):
+    def __init__(self, config: dict):
         """
         Volume augmentor class requires these config:
         min_volume_dBFS: float, min volume dBFS
         max_volume_dBFS: float, max volume dBFS
         """
-        super().__init__(input_path, config)
+        super().__init__(config)
         self.volume_dBFS = random.uniform(config["min_volume_dBFS"], config["max_volume_dBFS"])
         
         self.audio_data = None
         
-    def load(self):
+    def load(self, input_path: str):
+        """
+        :param input_path: path to the input audio file
+        """
         # load with librosa
-        super().load()
+        super().load(input_path)
         # transform to pydub audio segment
         self.audio_data = librosa_to_pydub(self.data, sr=self.sr)
         

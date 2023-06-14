@@ -8,7 +8,7 @@ from .utils import librosa_to_pydub
 import logging
 logger = logging.getLogger(__name__)
 class BackgroundNoiseAugmentor(BaseAugmentor):
-    def __init__(self, input_path: str, config: dict):
+    def __init__(self, config: dict):
         """
         Background noise augmentation method.
         
@@ -17,7 +17,7 @@ class BackgroundNoiseAugmentor(BaseAugmentor):
         min_SNR_dB: int, min SNR in dB
         max_SNR_dB: int, max SNR in dB
         """
-        super().__init__(input_path, config)
+        super().__init__(config)
         self.noise_path = config["noise_path"]
         self.noise_list = self.select_noise(self.noise_path)
         self.min_SNR_dB = config["min_SNR_dB"]
@@ -27,9 +27,12 @@ class BackgroundNoiseAugmentor(BaseAugmentor):
         noise_list = recursive_list_files(noise_path)
         return noise_list
     
-    def load(self):
+    def load(self, input_path: str):
+        """
+        :param input_path: path to the input audio file
+        """
         # load with librosa
-        super().load()
+        super().load(input_path)
         
         # Convert to pydub audio segment
         self.audio_data = librosa_to_pydub(self.data, sr=self.sr)

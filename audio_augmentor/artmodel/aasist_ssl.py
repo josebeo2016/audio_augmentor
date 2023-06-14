@@ -71,6 +71,15 @@ class ArtAasistSSL(ArtModelWrapper):
         _, pred = self._predict.max(dim=1)
         return per[0][0].item()*100, per[0][1].item()*100
     
+    def batch_load(self, input_dir: str,  batch_size = 8, sr: int = 16000):
+        """
+        Load data from input_dir as batch with batch size
+        In that case, thread sould be equal to 1
+        """
+        raise NotImplementedError("Not implemented yet")
+        
+
+    
 def pad(x: np.ndarray, max_len: int = 64600):
     x_len = x.shape[0]
     if x_len == 0:
