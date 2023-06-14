@@ -114,4 +114,5 @@ class AdversarialNoiseAugmentor(BaseAugmentor):
     def transform_load(self, input_dir, batch_size):
         # get classifier_art
         # [TODO] load model here
+        
         raise NotImplementedError
