@@ -125,14 +125,14 @@ def adversarial(args, filename):
         "aug_type": "adversarial",
         "output_path": args.output_path,
         "out_format": args.out_format,
-        "model_name": "lcnn",
-        "model_pretrained": "pretrained/lcnn_full_230209.pth",
-        "config_path": "pretrained/lcnn_lpsseg_uf_seg600.json",
-        "device": "cuda:2",
+        "model_name": "btse",
+        "model_pretrained": "pretrained/tts_vc_trans_64_concat.pth",
+        "config_path": "pretrained/model_config_RawNet_Trans_64concat.yaml",
+        "device": "cuda:3",
         "adv_method": "ProjectedGradientDescent",
         "adv_config": {
-            "eps": 1,
-            "eps_step": 0.1,
+            "eps": 0.003,
+            "eps_step": 0.001,
             "norm": "inf",
         }
     }
