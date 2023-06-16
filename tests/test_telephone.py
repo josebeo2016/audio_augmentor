@@ -4,12 +4,17 @@ import os
 BASE_DIR = os.path.dirname(os.path.realpath(__file__))
 
 def test_run():
-    SAMPLE_WAV = os.path.join(BASE_DIR,"data/LA_T_1000137.flac")
+    SAMPLE_WAV = os.path.join(BASE_DIR,"data/20230531_161208.wav")
     CONFIG = {
         "aug_type": "telephone",
         "output_path": os.path.join(BASE_DIR,"data/augmented"),
         "out_format": "wav",
         "encoding": "ALAW",
+        # bandpass filters can be removed by setting it to None: `"bandpass": None`
+        "bandpass": {
+            "lowpass": "3400",
+            "highpass": "400"
+        }
     }
     sa = TelephoneEncodingAugmentor(CONFIG)
     sa.load(SAMPLE_WAV)
