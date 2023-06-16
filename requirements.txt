@@ -12,3 +12,4 @@ h5py==3.7.0
 spafe==0.1.2
 matplotlib==3.5.3
 auditok==0.2.0
+tensorflow
