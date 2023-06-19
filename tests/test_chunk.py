@@ -6,7 +6,7 @@ import librosa
 import json
 import numpy as np
 BASE_DIR = os.path.dirname(os.path.realpath(__file__))
-DEVICE = "cuda:0" if torch.cuda.is_available() else "cpu"
+DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 # SAMPLE_WAV = os.path.join(BASE_DIR,"data/LA_T_1000137.flac") # short audio
 SAMPLE_WAV = os.path.join(BASE_DIR,"data/20230531_161208.wav") # long audio
 def test_chunk_lcnn():

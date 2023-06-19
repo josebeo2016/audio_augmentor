@@ -13,7 +13,7 @@ SAMPLE_WAV = os.path.join(BASE_DIR,"data/20230531_161208.wav") # long audio
 import logging
 logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
-DEVICE = "cuda:0" if torch.cuda.is_available() else "cpu"
+DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
         
 def test_rawnet2_pgd():
 
