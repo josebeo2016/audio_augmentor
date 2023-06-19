@@ -42,9 +42,9 @@ class ArtLCNN(ArtModelWrapper):
             phiflag=self.config["arch"]["args"]["phiflag"],
         ).to(self.device)
         # load weights
-        checkpoint = torch.load(model_path)
+        checkpoint = torch.load(model_path, map_location=self.device)
         
-        self.model.load_state_dict(checkpoint['state_dict'])
+        self.model.load_state_dict(checkpoint['state_dict'], )
         self.model.to(self.device)
         self.model.eval()
 
