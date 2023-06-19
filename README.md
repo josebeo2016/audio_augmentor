@@ -1,5 +1,5 @@
 # Audio Augmentation Library for Speech Processing
-
+![Github CI](https://github.com/josebeo2016/audio_augmentor/actions/workflows/python-package.yml/badge.svg)
 ## [Documentation](https://audio-augmentor.readthedocs.io/en/latest/)
 ## Install
 
