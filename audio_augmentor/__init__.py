@@ -5,9 +5,9 @@ from audio_augmentor.speed import SpeedAugmentor
 from audio_augmentor.volume import VolumeAugmentor
 from audio_augmentor.telephone import TelephoneEncodingAugmentor
 
-from audio_augmentor.adversarial import AdversarialNoiseAugmentor
+# from audio_augmentor.adversarial import AdversarialNoiseAugmentor
 
-from audio_augmentor import artmodel
+# from audio_augmentor import artmodel
 
 # from . import utils
 

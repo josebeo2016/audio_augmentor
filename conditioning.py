@@ -12,7 +12,7 @@ import torch
 from pydub import AudioSegment
 import random
 
-from audio_augmentor import BackgroundNoiseAugmentor, PitchAugmentor, ReverbAugmentor, SpeedAugmentor, VolumeAugmentor, AdversarialNoiseAugmentor
+from audio_augmentor import BackgroundNoiseAugmentor, PitchAugmentor, ReverbAugmentor, SpeedAugmentor, VolumeAugmentor
 from audio_augmentor import SUPPORTED_AUGMENTORS
 BASE_DIR = os.path.dirname(os.path.realpath(__file__))
 
@@ -59,10 +59,12 @@ def background_noise(args, filename):
         "out_format": args.out_format,
         "noise_path": args.noise_path,
         "min_SNR_dB": 5,
-        "max_SNR_dB": 15
+        "max_SNR_dB": 20
     }
-    bga = BackgroundNoiseAugmentor(in_file, config)
-    bga.run()
+    bga = BackgroundNoiseAugmentor(config)
+    bga.load(in_file)
+    bga.transform()
+    bga.save()
 
 def pitch(args, filename):
     # load audio:
@@ -74,8 +76,10 @@ def pitch(args, filename):
         "min_pitch_shift": -1,
         "max_pitch_shift": 1
     }
-    pa = PitchAugmentor(in_file, config)
-    pa.run()
+    pa = PitchAugmentor(config)
+    pa.load(in_file)
+    pa.transform()
+    pa.save()
     
 def reverb(args, filename):
     # load audio:
@@ -86,8 +90,10 @@ def reverb(args, filename):
         "out_format": args.out_format,
         "rir_path": args.rir_path,
     }
-    ra = ReverbAugmentor(in_file, config)
-    ra.run()
+    ra = ReverbAugmentor(config)
+    ra.load(in_file)
+    ra.transform()
+    ra.save()
 
 def speed(args, filename):
     # load audio:
@@ -99,8 +105,10 @@ def speed(args, filename):
         "min_speed_factor": 0.9,
         "max_speed_factor": 1.1
     }
-    sa = SpeedAugmentor(in_file, config)
-    sa.run()
+    sa = SpeedAugmentor(config)
+    sa.load(in_file)
+    sa.transform()
+    sa.save()
     
 def volume(args, filename):
     # load audio:
@@ -112,8 +120,10 @@ def volume(args, filename):
         "min_volume_dBFS": -10,
         "max_volume_dBFS": 10
     }
-    va = VolumeAugmentor(in_file, config)
-    va.run()
+    va = VolumeAugmentor(config)
+    va.load(in_file)
+    va.transform()
+    va.save()
 
 def adversarial(args, filename):
     # load audio:
@@ -136,8 +146,10 @@ def adversarial(args, filename):
             "norm": "inf",
         }
     }
-    ana = AdversarialNoiseAugmentor(in_file, config)
-    ana.run()
+    ana = AdversarialNoiseAugmentor(config)
+    ana.load(in_file)
+    ana.transform()
+    ana.save()
 
 
 def main():
